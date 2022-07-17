@@ -9,13 +9,11 @@
             </pattern>
         </encoder>
     </appender>
-
+<!--
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
         <batchMaxBytes>65536</batchMaxBytes>
         <http>
-            <!--
             <url>http://localhost:3100/loki/api/v1/push</url>
-            -->
             <url>https://logs-prod-eu-west-0.grafana.net/loki/api/v1/push</url>
             <auth>
                 <username>244977</username>
@@ -32,10 +30,12 @@
             <sortByTime>true</sortByTime>
         </format>
     </appender>
-
+-->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
+        <!--
         <appender-ref ref="LOKI" />
+        -->
     </root>
 
 </configuration>
