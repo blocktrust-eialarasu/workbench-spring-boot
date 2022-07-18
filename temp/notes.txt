@@ -1,0 +1,4 @@
+docker compose -f docker-compose-graylog.yaml up -d
+localhost or 127.0.0.1:9000 admin / admin
+gradle bootRun
+
