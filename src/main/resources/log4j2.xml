@@ -12,19 +12,30 @@
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss.SSS} [${hostName}-%thread] %-5level %logger{5} - %msg%n</Pattern>
             </PatternLayout>
+            <TimeBasedTriggeringPolicy />
+            <!--
             <Policies>
-                <SizeBasedTriggeringPolicy size="10MB" />
+               <SizeBasedTriggeringPolicy size="10MB" />
             </Policies>
             <DefaultRolloverStrategy max="10"/>
+            -->
         </RollingFile>
+        <Failover name="Failover" primary="FileAppender">
+            <Failovers>
+                <AppenderRef ref="Console"/>
+            </Failovers>
+        </Failover>
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="ConsoleAppender" />
+<!--            <AppenderRef ref="ConsoleAppender" />-->
+            <AppenderRef ref="Failover"/>
         </Root>
+        <!--
         <Logger name="io.wybis.workbench_spring_boot" level="debug" additivity="false">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender"/>
         </Logger>
+        -->
     </Loggers>
 </Configuration>
