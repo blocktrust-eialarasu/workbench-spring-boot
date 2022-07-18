@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <property name="LOG_FOLDER">logs</property>
+    </Properties>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n"/>
+        </Console>
+        <RollingFile name="FileAppender" fileName="${LOG_FOLDER}/app.log"
+                     filePattern="${LOG_FOLDER}/app-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [${hostName}-%thread] %-5level %logger{5} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender" />
+        </Root>
+        <Logger name="io.wybis.workbench_spring_boot" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -1,4 +1,4 @@
-package com.blocktrust.smartapp.controllers;
+package io.wybis.workbench_spring_boot.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
