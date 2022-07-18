@@ -4,7 +4,17 @@
         <property name="LOG_FOLDER">logs</property>
     </Properties>
     <Appenders>
-        <RollingFile name="RollingFile" fileName="${LOG_FOLDER}/app.log"
+        <appender name="gelfAppender" class="org.graylog2.log.GelfAppender">
+            <param name="graylogHost" value="127.0.0.1"/>
+            <param name="originHost" value="localhost"/>
+            <param name="graylogPort" value="12201"/>
+            <param name="extractStacktrace" value="true"/>
+            <param name="addExtendedInformation" value="true"/>
+            <param name="facility" value="log4j"/>
+            <param name="Threshold" value="DEBUG"/>
+            <param name="additionalFields" value="{'environment': 'DEV', 'application': 'WorkbenchSpringBoot'}"/>
+        </appender>
+        <RollingFile name="rollingFileAppender" fileName="${LOG_FOLDER}/app.log"
                      filePattern="${LOG_FOLDER}/app-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss.SSS} [${hostName}-%thread] %-5level %logger{5} - %msg%n</Pattern>
@@ -17,22 +27,27 @@
             <DefaultRolloverStrategy max="10"/>
             -->
         </RollingFile>
-        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+        <Console name="consoleAppender" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n"/>
         </Console>
-        <Failover name="Failover" primary="RollingFile">
+        <Failover name="failoverFile" primary="rollingFileAppender">
             <Failovers>
-                <AppenderRef ref="ConsoleAppender"/>
+                <AppenderRef ref="consoleAppender"/>
+            </Failovers>
+        </Failover>
+        <Failover name="failoverGelf" primary="gelfAppender">
+            <Failovers>
+                <AppenderRef ref="failoverFile"/>
             </Failovers>
         </Failover>
     </Appenders>
     <Loggers>
         <Root level="error">
-            <AppenderRef ref="Failover"/>
+            <AppenderRef ref="failoverGelf"/>
         </Root>
-        <Logger name="io.wybis.workbench_spring_boot" level="debug" additivity="false">
-            <AppenderRef ref="ConsoleAppender" />
-            <AppenderRef ref="Failover"/>
+        <Logger name="io.wybis.workbench_spring_boot" level="DEBUG" additivity="false">
+            <AppenderRef ref="failoverGelf"/>
+            <AppenderRef ref="consoleAppender" />
         </Logger>
     </Loggers>
 </Configuration>
