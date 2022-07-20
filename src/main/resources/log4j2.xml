@@ -4,16 +4,24 @@
         <property name="LOG_FOLDER">logs</property>
     </Properties>
     <Appenders>
-        <appender name="gelfAppender" class="org.graylog2.log.GelfAppender">
-            <param name="graylogHost" value="127.0.0.1"/>
-            <param name="originHost" value="localhost"/>
-            <param name="graylogPort" value="12201"/>
-            <param name="extractStacktrace" value="true"/>
-            <param name="addExtendedInformation" value="true"/>
-            <param name="facility" value="log4j"/>
-            <param name="Threshold" value="DEBUG"/>
-            <param name="additionalFields" value="{'environment': 'DEV', 'application': 'WorkbenchSpringBoot'}"/>
-        </appender>
+        <Gelf name="gelfAppender" host="tcp:localhost" port="12201" version="1.0" extractStackTrace="true"
+              filterStackTrace="true" mdcProfiling="true" includeFullMdc="true" maximumMessageSize="8192"
+              originHost="my.host.name" additionalFieldTypes="fieldName1=String,fieldName2=Double,fieldName3=Long"
+              ignoreExceptions="true">
+            <Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}" />
+            <Field name="level" pattern="%level" />
+            <Field name="simpleClassName" pattern="%C{1}" />
+            <Field name="className" pattern="%C" />
+            <Field name="server" pattern="%host" />
+            <Field name="server.fqdn" pattern="%host{fqdn}" />
+            <!--
+            <Field name="fieldName2" literal="fieldValue2" /> This is a static field
+            <Field name="mdcField2" mdc="mdcField2" /> This is a field using MDC
+            <DynamicMdcFields regex="mdc.*" />
+            <DynamicMdcFields regex="(mdc|MDC)fields" />
+            <DynamicMdcFieldType regex="my_field.*" type="String" />
+            -->
+        </Gelf>
         <RollingFile name="rollingFileAppender" fileName="${LOG_FOLDER}/app.log"
                      filePattern="${LOG_FOLDER}/app-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout>
@@ -37,7 +45,7 @@
         </Failover>
         <Failover name="failoverGelf" primary="gelfAppender">
             <Failovers>
-                <AppenderRef ref="failoverFile"/>
+                <AppenderRef ref="rollingFileAppender"/>
             </Failovers>
         </Failover>
     </Appenders>
@@ -45,9 +53,9 @@
         <Root level="error">
             <AppenderRef ref="failoverGelf"/>
         </Root>
-        <Logger name="io.wybis.workbench_spring_boot" level="DEBUG" additivity="false">
-            <AppenderRef ref="failoverGelf"/>
-            <AppenderRef ref="consoleAppender" />
+        <Logger name="io.wybis.workbench_spring_boot" level="debug" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="failoverGelf" />
         </Logger>
     </Loggers>
 </Configuration>
